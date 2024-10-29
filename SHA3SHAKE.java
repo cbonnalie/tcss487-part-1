@@ -73,19 +73,13 @@ public class SHA3SHAKE {
      * @param len byte count on the buffer
      */
     public void absorb(byte[] data, int pos, int len) {
-
         for(int i = 0; i < len; i++) {
-            // determine which lane the byte should go into
-            int laneIndex = (pos + i) / 8;
-            // get the x and y position of the byte
-            int y = laneIndex / 5;
+            int laneIndex = (pos + i) / 8;  // determine which lane the byte should go into
+            int y = laneIndex / 5;          // get the x and y position of the byte
             int x = laneIndex % 5;
-            // determine the byte position
-            int byteIndex = (pos + i) % 8;
-
+            int byteIndex = (pos + i) % 8;  // determine the byte position
             state[y][x] ^= (long) (data[i] & 0xFF) << byteIndex * 8;
         }
-
     }
 
     /**
