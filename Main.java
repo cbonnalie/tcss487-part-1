@@ -176,8 +176,7 @@ public class Main {
             } else if (line.startsWith("Outputlen")) {
                 int length = Integer.parseInt(line.split(" = ")[1]);
                 outputBits.add(length);
-            }
-            else if (line.startsWith("[Input")) {
+            } else if (line.startsWith("[Input")) {
                 inputLength = Integer.parseInt(line.split(" = ")[1].replace("]", ""));
             }
         }
@@ -432,6 +431,21 @@ public class Main {
         }
     }
 
+    private static final void macFromUser(String pass, int suffix, int length) {
+        if (length <= 0) {
+            System.out.println("Error: MAC tag lengths must be positive.");
+        }
+
+        Scanner scanner = new Scanner(System.in);
+        byte[] contents = scanner.nextLine().getBytes();
+        SHA3SHAKE sponge = new SHA3SHAKE();
+        sponge.init(suffix);
+        sponge.absorb(pass.getBytes());
+        sponge.absorb(contents);
+        byte[] mac = sponge.squeeze(length);
+        System.out.println(HEXF.formatHex(mac));
+    }
+
     private static final void encrypt(String dir, String pass, String outputDir) {
         String sanitizedOutputDir = outputDir;
         if (outputDir == null) {
@@ -457,7 +471,7 @@ public class Main {
             }
 
             try (FileOutputStream fos = new FileOutputStream(sanitizedOutputDir)) {
-               fos.write(contents);
+                fos.write(contents);
             }
             // System.out.println(new String(contents));
             System.out.println(HEXF.formatHex(nonce));
@@ -488,7 +502,7 @@ public class Main {
             }
 
             try (FileOutputStream fos = new FileOutputStream(sanitizedOutputDir)) {
-               fos.write(contents);
+                fos.write(contents);
             }
         } catch (IOException e) {
             System.out.println("Error: Invalid path to file. Please try again.");
@@ -532,6 +546,7 @@ public class Main {
                     // 3 = file directory
                     // 4 = number of outputted bits
 
+
                     if (!args[1].matches("128|256")) {
                         System.out.println("Error: Invalid security level for Message Authentication Code. Implemented security levels include: 224, 256, 384, or 512.");
                     } else {
@@ -544,18 +559,23 @@ public class Main {
                         }
                     }
                 } else if (args.length == 4) {
+                    // private static final void macFromUser(String pass, int suffix, int length) {
                     // # arguments
                     // 0 = "mac"
-                    // 1 = passkey
-                    // 2 = file directory
-                    // 3 = number of outputted bits
+                    // 1 = security level
+                    // 2 = passkey
+                    // 3 = length
 
-                    // default security level is 256
-                    try {
-                        int length = Integer.parseInt(args[3]);
-                        macFromFile(args[2], args[1], 256, length);
-                    } catch (NumberFormatException e) {
-                        System.out.println("Error parsing MAC output length.");
+                    if (!args[1].matches("128|256")) {
+                        System.out.println("Error: Invalid security level for Message Authentication Code. Implemented security levels include: 224, 256, 384, or 512.");
+                    } else {
+                        try {
+                            int length = Integer.parseInt(args[3]);
+                            int suffix = Integer.parseInt(args[1]);
+                            macFromUser(args[2], suffix, length);
+                        } catch (NumberFormatException e) {
+                            System.out.println("Error parsing MAC output length.");
+                        }
                     }
                 } else {
                     System.out.println("Error: Invalid number of arguments.");
@@ -575,7 +595,7 @@ public class Main {
                     // 0 = "encrypt"
                     // 1 = passphrase
                     // 2 = input file directory
-                    
+
                     encrypt(args[2], args[1], null);
                 } else {
                     System.out.println("Error: Invalid number of arguments.");
@@ -597,7 +617,7 @@ public class Main {
                     // 1 = passphrase
                     // 2 = random nonce from encryption
                     // 3 = input file directory
-                    
+
                     decrypt(args[3], args[1], HEXF.parseHex(args[2]), null);
                 } else {
                     System.out.println("Error: Invalid number of arguments.");
