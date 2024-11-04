@@ -54,23 +54,39 @@ public class Main {
     }
 
     /**
-     * Class to represent a Known Answer Test Vector.
-     * Each vector has a list of message lengths, messages, and expected message digests.
+     * Class to represent a Known Answer Test Vector for SHA3.
+     * @param lengths   the lengths of the messages.
+     * @param messages  the messages.
+     * @param expected  the expected message digests.
      */
     private record SHA3KATVector(List<Integer> lengths, List<String> messages, List<String> expected) {
     }
 
     /**
-     * Class to represent a Monte Carlo Test Vector.
-     * Each vector has a seed and a list of message digests.
+     * Class to represent a Monte Carlo Test Vector for SHA3.
+     * @param seed              the seed for the Monte Carlo test.
+     * @param messageDigests    the message digests.
      */
     private record SHA3MonteVector(String seed, List<String> messageDigests) {
     }
 
+    /**
+     * Class to represent a Known Answer Test Vector for SHAKE.
+     * @param lengths   the lengths of the messages.
+     * @param messages  the messages.
+     * @param expected  the expected message digests.
+     * @param outLength the output lengths.
+     */
     private record SHAKEKATVector(List<Integer> lengths, List<String> messages, List<String> expected,
                                   List<Integer> outLength) {
     }
 
+    /**
+     * Class to represent a Monte Carlo Test Vector for SHAKE.
+     * @param seed              the seed for the Monte Carlo test.
+     * @param messageDigests    the message digests.
+     * @param outputLengths     the output lengths.
+     */
     private record SHAKEMonteVector(String seed, List<String> messageDigests, List<Integer> outputLengths) {
     }
 
@@ -100,6 +116,9 @@ public class Main {
             }
     );
 
+    /**
+     * Map to store the paths to the SHAKE test vectors.
+     */
     private static final Map<Integer, String[]> SHAKEVectorPaths = Map.of(
             128, new String[]{
                     "tests/shakebytetestvectors/SHAKE128ShortMsg.rsp",
@@ -257,7 +276,7 @@ public class Main {
             SHA3KATVector parsedLong = parseSHA3KATVector(version.longPath);
             SHA3MonteVector parsedMonte = parseSHA3MonteVector(version.montePath);
 
-            System.out.println("////////// SHA3-" + version.bits + " TESTS //////////");
+            System.out.println("|~~~~~~~~~~~ SHA3-" + version.bits + " TESTS ~~~~~~~~~~~|");
             runSHA3KAT(version.bits, parsedShort);
             runSHA3KAT(version.bits, parsedLong);
             runSHA3Monte(version.bits, parsedMonte);
@@ -273,7 +292,7 @@ public class Main {
             SHAKEKATVector parsedVariable = parseSHAKEKATVector(version.variablePath);
             SHAKEMonteVector parsedMonte = parseSHAKEMonteVector(version.montePath);
 
-            System.out.println("////////// SHAKE-" + version.bits + " TESTS //////////");
+            System.out.println("|~~~~~~~~~~~ SHAKE-" + version.bits + " TESTS ~~~~~~~~~~~|");
             runSHAKEKAT(version.bits, parsedShort);
             runSHAKEKAT(version.bits, parsedLong);
             runSHAKEKAT(version.bits, parsedVariable);
